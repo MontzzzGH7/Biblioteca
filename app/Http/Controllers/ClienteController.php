@@ -7,19 +7,20 @@ use Illuminate\Http\Request;
 
 class ClienteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $clientes = Cliente::all();
         return view('clientes.listado_clientes', compact('clientes'));
     }
 
+    public function show($id) {
+        $cliente = Cliente::find($id);
+        return view('clientes/formulario_showC', compact('cliente'));
+    }
+
     public function create()
     {
-        return view('/clientes/formulario_clientes');
-
+        return view('clientes/formulario_clientes');
     }
 
     public function store(Request $req)
@@ -31,45 +32,40 @@ class ClienteController extends Controller
         $cliente->apellido_materno = $req->input('apellido_materno');
         $cliente->correo = $req->input('correo');
         $cliente->telefono = $req->input('telefono');
-        $cliente->foto = $req->input('foto');
+        $cliente->usuario = $req->input('usuario');
         $cliente->contraseña = bcrypt($req->input('contraseña'));
         $cliente->estado = $req->input('estado');
+
+        $cliente->save();
+        return redirect('/clientes/listado');
+    }
+
+    public function edit($id)
+    {
+        $cliente = Cliente::find($id);
+        return view('clientes/formulario_showC')->with('cliente', $cliente);
+    }
+    public function update(Request $req, $id)
+    {
+        $cliente = Cliente::find($id);
+
+        $cliente->nombre = $req->input('nombre');
+        $cliente->apellido_paterno = $req->input('apellido_paterno');
+        $cliente->apellido_materno = $req->input('apellido_materno');
+        $cliente->correo = $req->input('correo');
+        $cliente->telefono = $req->input('telefono');
         $cliente->usuario = $req->input('usuario');
-        
-        $cliente->save(); //insert into table clientes
+        $cliente->estado = $req->input('estado');
 
-         return redirect('/clientes/listado');
+        $cliente->save();
+        return redirect('/clientes/listado');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Cliente $cliente)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Cliente $cliente)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Cliente $cliente)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Cliente $cliente)
-    {
-        //
+        $cliente = Cliente::find($id);
+    
+        $cliente->delete();
+        return redirect('/clientes/listado')->with('mensaje', 'Cliente eliminado correctamente');
     }
 }

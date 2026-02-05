@@ -7,9 +7,6 @@ use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $productos = Producto::all();
@@ -18,11 +15,10 @@ class ProductoController extends Controller
 
     public function create()
     {
-        return view('/libros/formulario_libros');
+        return view('libros.formulario_libros');
     }
 
     public function store(Request $req)
-
     {
         $libro = new Producto();
 
@@ -34,41 +30,46 @@ class ProductoController extends Controller
         $libro->fecha_publi = $req->input('fecha_publi');
         $libro->estado = $req->input('estado');
 
-        $libro->save(); //insert into table productos
+        // Lógica para la imagen de portada (igual que Administradores)
+        if ($req->hasFile('imagen_url')) {
+            $nombreImagen = time() . '.' . $req->imagen_url->extension();
+            $req->imagen_url->move(public_path('img/libros'), $nombreImagen);
+            $libro->imagen_url = $nombreImagen;
+        }
+
+        $libro->save();
 
         return redirect('/productos/listado');
+    }
+
+    public function edit($id)
+    {
+        $libro = Producto::find($id);
+        // Pasamos la variable como 'libro' o 'producto' según uses en tu Blade
+        return view('libros\formulario_editarL')->with('producto', $libro);
+    }
+
+    public function update(Request $req, $id)
+    {
+        $libro = Producto::find($id);
         
+        $libro->titulo = $req->input('titulo');
+        $libro->autor_id = $req->input('autor_id');
+        $libro->descripcion = $req->input('descripcion');
+        $libro->isbn = $req->input('isbn');
+        $libro->edicion = $req->input('edicion');
+        $libro->fecha_publi = $req->input('fecha_publi');
+        $libro->estado = $req->input('estado');
+
+        $libro->save();
+
+        return redirect('/productos/listado');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Producto $producto)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Producto $producto)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Producto $producto)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Producto $producto)
-    {
-        //
+        $libro = Producto::find($id);
+        $libro->delete();
+        return redirect('/productos/listado');
     }
 }

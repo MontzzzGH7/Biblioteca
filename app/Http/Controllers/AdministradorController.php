@@ -40,28 +40,23 @@ class AdministradorController extends Controller
         return redirect('/admins/listado');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Administrador $administrador)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
+    public function show($id)
     {
         $administrador = Administrador::find($id);
+        return view('administradores/formulario_show', compact('administrador'));
+    }
+
+    public function edit($id)
+    {
+        $admin = Administrador::find($id);
         return view('/administradores/formulario_editar')->with('administrador', $admin);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Administrador $administrador)
+    public function update(Request $req, $id)
     {
+        //$admin = Administrador::find($id);
+        $admin = Administrador::find($id);
+
         $admin->nombre = $req->input('nombre');
         $admin->apellido_paterno = $req->input('apellido_paterno');
         $admin->apellido_materno = $req->input('apellido_materno');
@@ -72,15 +67,19 @@ class AdministradorController extends Controller
         $admin->foto = $req->input('foto');
         $admin->estado = $req->input('estado');
 
+        $admin->save(); //update administradores set ... where id=id
+
+        return redirect('/admins/listado');
+
 
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Administrador $administrador)
+    public function destroy($id)
     {
-        //
+        $administrador = Administrador::find($id);
+    
+        $administrador->delete();
+        return redirect('/admins/listado')->with('mensaje', 'Administrador eliminado correctamente');
     }
 
 
