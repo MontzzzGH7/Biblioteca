@@ -57,9 +57,9 @@ Route::post('/admins/{id}/actualizar',[AdministradorController::class, 'update']
 route::post('/clientes/{id}/actualizar',[ClienteController::class, 'update']);
 route::post('/productos/{id}/actualizar',[ProductoController::class, 'update']);
 
-Route::get('/admins/{id}/eliminar',[AdministradorController::class, 'destroy']);
-route::get('/clientes/{id}/eliminar',[ClienteController::class, 'destroy']);
-route::get('/productos/{id}/eliminar',[ProductoController::class, 'destroy']);
+Route::post('/admins/{id}/eliminar',[AdministradorController::class, 'destroy']);
+route::post('/clientes/{id}/eliminar',[ClienteController::class, 'destroy']);
+route::post('/productos/{id}/eliminar',[ProductoController::class, 'destroy']);
 
 Route::get('/admins/{id}/ver',[AdministradorController::class, 'show']);
 route::get('/clientes/{id}/ver',[ClienteController::class, 'show']);

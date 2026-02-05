@@ -13,6 +13,12 @@ class ProductoController extends Controller
         return view('libros.listado_libros', compact('productos'));
     }
 
+    public function show($id)
+{
+    $producto = Producto::find($id);
+    return view('libros.formulario_showL', compact('producto'));
+}
+
     public function create()
     {
         return view('libros.formulario_libros');
