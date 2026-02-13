@@ -65,3 +65,53 @@ Route::get('/admins/{id}/ver',[AdministradorController::class, 'show']);
 route::get('/clientes/{id}/ver',[ClienteController::class, 'show']);
 route::get('/productos/{id}/ver',[ProductoController::class, 'show']);
 
+
+
+
+Route::get('/geolocalizacion', function () {return view('geolocalizacion.geolocalizacion');});
+Route::get('/login', function(){ return view('login.login');})->name('login');
+
+
+
+
+
+
+
+
+// RUTA DE INICIO DE GOOGLE OAUTH
+Route::get('/auth/google', function(){
+    return Socialite::driver('google')->redirect();
+})->name('google.login');
+
+// RUTA DE CALLBACK DE GOOGLE
+Route::get('/auth/google/callback', function () {
+    try {
+        $googleUser = Socialite::driver('google')->user();
+
+        // Buscar si el usuario ya existe
+        $user = User::where('email', $googleUser->getEmail())->first();
+
+        // Si no existe, crearlo automáticamente
+        if (!$user) {
+            $user = User::create([
+                'name' => $googleUser->getName(),
+                'email' => $googleUser->getEmail(),
+                'password' => bcrypt(uniqid()),
+            ]);
+        }
+
+        // Iniciar sesión
+        Auth::login($user);
+
+        // Redirigir al home
+        return redirect('/');
+
+    } catch (Exception $e) {
+        return redirect('/login')->with('error', 'Error: ' . $e->getMessage());
+    }
+});
+
+// RUTA DE INICIO (HOME)
+Route::get('/', function(){
+    return "¡Login exitoso! Bienvenido a la biblioteca.";
+});

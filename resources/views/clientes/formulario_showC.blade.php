@@ -79,10 +79,12 @@
                         <label for="foto"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Actualizar Fotografía</label>
                         
-                        {{-- Mostramos la foto que ya tiene --}}
                         <div class="flex items-center gap-4 mb-4">
-                            <img src="{{ asset('img/clientes/'.$cliente->foto) }}" class="h-20 w-20 rounded-full border border-gray-300 object-cover" alt="Foto actual">
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Foto actual cargada</p>
+                            {{-- CORRECCIÓN: Ruta con /storage/ y ID para ocultar --}}
+                            <div id="foto-actual-container">
+                                <img src="{{ asset('/storage/img/clientes/'.$cliente->foto) }}" class="h-20 w-20 rounded-full border border-gray-300 object-cover" alt="Foto actual">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Foto actual cargada</p>
+                            </div>
                         </div>
 
                         <input type="file" name="foto" id="foto" accept="image/*"
@@ -113,6 +115,7 @@
             const fotoInput = document.getElementById('foto');
             const fotoPreview = document.getElementById('foto-preview');
             const fotoPreviewImg = document.getElementById('foto-preview-img');
+            const fotoActualContainer = document.getElementById('foto-actual-container'); // Referencia a la vieja
 
             if (fotoInput && fotoPreview && fotoPreviewImg) {
                 fotoInput.addEventListener('change', function(e) {
@@ -121,6 +124,8 @@
                         reader.onload = function(e) {
                             fotoPreviewImg.src = e.target.result;
                             fotoPreview.classList.remove('hidden');
+                            // OCULTAR la foto vieja para que no estorbe
+                            if(fotoActualContainer) fotoActualContainer.classList.add('hidden');
                         }
                         reader.readAsDataURL(e.target.files[0]);
                     }

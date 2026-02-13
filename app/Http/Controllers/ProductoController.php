@@ -4,78 +4,86 @@ namespace App\Http\Controllers;
 
 use App\Models\Producto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductoController extends Controller
 {
-    public function index()
-    {
+    public function index() {
         $productos = Producto::all();
         return view('libros.listado_libros', compact('productos'));
     }
 
-    public function show($id)
-{
-    $producto = Producto::find($id);
-    return view('libros.formulario_showL', compact('producto'));
-}
-
-    public function create()
-    {
+    public function create() {
         return view('libros.formulario_libros');
     }
 
-    public function store(Request $req)
-    {
+    public function store(Request $req) {
         $libro = new Producto();
+        $libro->titulo = $req->titulo;
+        $libro->autor_id = $req->autor_id;
+        $libro->descripcion = $req->descripcion;
+        $libro->isbn = $req->isbn;
+        $libro->edicion = $req->edicion;
+        $libro->fecha_publi = $req->fecha_publi;
+        $libro->estado = $req->estado;
+        $libro->formato_id = $req->formato_id;
+        $libro->idioma_id = $req->idioma_id;
+        $libro->genero_id = $req->genero_id;
+        $libro->editorial_id = $req->editorial_id;
+        $libro->save(); // Guardar para obtener ID
 
-        $libro->titulo = $req->input('titulo');
-        $libro->autor_id = $req->input('autor_id');
-        $libro->descripcion = $req->input('descripcion');
-        $libro->isbn = $req->input('isbn');
-        $libro->edicion = $req->input('edicion');
-        $libro->fecha_publi = $req->input('fecha_publi');
-        $libro->estado = $req->input('estado');
-
-        // Lógica para la imagen de portada (igual que Administradores)
-        if ($req->hasFile('imagen_url')) {
-            $nombreImagen = time() . '.' . $req->imagen_url->extension();
-            $req->imagen_url->move(public_path('img/libros'), $nombreImagen);
-            $libro->imagen_url = $nombreImagen;
+        // Imagen 1: Portada
+        if ($req->hasFile('portada')) {
+            $nom = 'productos_portada_' . $libro->id . '.' . $req->portada->extension();
+            $req->portada->storeAs('img/libros', $nom, 'public');
+            $libro->portada = $nom;
+        }
+        // Imagen 2: Contraportada
+        if ($req->hasFile('contraportada')) {
+            $nom = 'productos_contra_' . $libro->id . '.' . $req->contraportada->extension();
+            $req->contraportada->storeAs('img/libros', $nom, 'public');
+            $libro->contraportada = $nom;
+        }
+        // Imagen 3: Extra (Obligatoria según instrucciones)
+        if ($req->hasFile('extra')) {
+            $nom = 'productos_extra_' . $libro->id . '.' . $req->extra->extension();
+            $req->extra->storeAs('img/libros', $nom, 'public');
+            $libro->extra = $nom;
         }
 
         $libro->save();
-
         return redirect('/productos/listado');
     }
 
-    public function edit($id)
-    {
-        $libro = Producto::find($id);
-        // Pasamos la variable como 'libro' o 'producto' según uses en tu Blade
-        return view('libros\formulario_editarL')->with('producto', $libro);
+    public function edit($id) {
+        $producto = Producto::find($id);
+        return view('libros.formulario_editarL', compact('producto'));
     }
 
-    public function update(Request $req, $id)
-    {
+    public function update(Request $req, $id) {
         $libro = Producto::find($id);
-        
-        $libro->titulo = $req->input('titulo');
-        $libro->autor_id = $req->input('autor_id');
-        $libro->descripcion = $req->input('descripcion');
-        $libro->isbn = $req->input('isbn');
-        $libro->edicion = $req->input('edicion');
-        $libro->fecha_publi = $req->input('fecha_publi');
-        $libro->estado = $req->input('estado');
+        $libro->titulo = $req->titulo;
+        $libro->estado = $req->estado;
+
+        // Repetir lógica de imágenes (sobrescribe por nombre)
+        if ($req->hasFile('portada')) {
+            $nom = 'productos_portada_' . $libro->id . '.' . $req->portada->extension();
+            $req->portada->storeAs('img/libros', $nom, 'public');
+            $libro->portada = $nom;
+        }
+        if ($req->hasFile('contraportada')) {
+            $nom = 'productos_contra_' . $libro->id . '.' . $req->contraportada->extension();
+            $req->contraportada->storeAs('img/libros', $nom, 'public');
+            $libro->contraportada = $nom;
+        }
+        if ($req->hasFile('extra')) {
+            $nom = 'productos_extra_' . $libro->id . '.' . $req->extra->extension();
+            $req->extra->storeAs('img/libros', $nom, 'public');
+            $libro->extra = $nom;
+        }
 
         $libro->save();
-
         return redirect('/productos/listado');
     }
 
-    public function destroy($id)
-    {
-        $libro = Producto::find($id);
-        $libro->delete();
-        return redirect('/productos/listado');
-    }
 }

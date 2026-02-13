@@ -4,84 +4,65 @@ namespace App\Http\Controllers;
 
 use App\Models\Administrador;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdministradorController extends Controller
 {
-
-    public function index()
-    {
+    public function index() {
         $administradores = Administrador::all();
         return view('administradores.listado', compact('administradores'));
     }
 
-    public function create()
-    {
-        return view('/administradores/formulario_crear');
+    public function create() {
+        return view('administradores.formulario_crear');
     }
 
-    public function store(Request $req)
-    {
-        //return $req->all();
-
+    public function store(Request $req) {
         $admin = new Administrador();
+        $admin->nombre = $req->nombre;
+        $admin->apellido_paterno = $req->apellido_paterno;
+        $admin->apellido_materno = $req->apellido_materno;
+        $admin->correo = $req->correo;
+        $admin->usuario = $req->usuario;
+        $admin->contraseña = bcrypt($req->contraseña);
+        $admin->rol = $req->rol;
+        $admin->estado = 'activo';
+        $admin->foto = 'default.jpg'; 
 
-        $admin->nombre = $req->input('nombre');
-        $admin->apellido_paterno = $req->input('apellido_paterno');
-        $admin->apellido_materno = $req->input('apellido_materno');
-        $admin->correo = $req->input('correo');
-        $admin->usuario = $req->input('usuario');
-        $admin->contraseña = bcrypt($req->input('contraseña'));
-        $admin->rol = $req->input('rol');
-        $admin->foto = $req->input('foto');
-        $admin->estado = $req->input('estado');
+        $admin->save(); // Guardar para tener ID
 
-        $admin->save(); //insert into table administradores
-
+        if($req->hasFile('foto')) {
+            $foto = $req->file('foto');
+            
+            $nombre = 'administradores_' . $admin->id . '.' . $foto->getClientOriginalExtension();
+            $foto->storeAs('img/admins', $nombre, 'public');
+            
+            $admin->foto = $nombre;
+            $admin->save();
+        }
         return redirect('/admins/listado');
     }
 
-    public function show($id)
-    {
+    public function edit($id) {
         $administrador = Administrador::find($id);
-        return view('administradores/formulario_show', compact('administrador'));
+        return view('administradores.formulario_editar', compact('administrador'));
     }
 
-    public function edit($id)
-    {
+    public function update(Request $req, $id) {
         $admin = Administrador::find($id);
-        return view('/administradores/formulario_editar')->with('administrador', $admin);
-    }
+        $admin->nombre = $req->nombre;
+        $admin->apellido_paterno = $req->apellido_paterno;
+        $admin->rol = $req->rol;
 
-    public function update(Request $req, $id)
-    {
-        //$admin = Administrador::find($id);
-        $admin = Administrador::find($id);
-
-        $admin->nombre = $req->input('nombre');
-        $admin->apellido_paterno = $req->input('apellido_paterno');
-        $admin->apellido_materno = $req->input('apellido_materno');
-        $admin->correo = $req->input('correo');
-        $admin->usuario = $req->input('usuario');
-        $admin->contraseña = bcrypt($req->input('contraseña'));
-        $admin->rol = $req->input('rol');
-        $admin->foto = $req->input('foto');
-        $admin->estado = $req->input('estado');
-
-        $admin->save(); //update administradores set ... where id=id
-
+        if($req->hasFile('foto')) {
+            $foto = $req->file('foto');
+            $nombre = 'administradores_' . $admin->id . '.' . $foto->getClientOriginalExtension();
+            $foto->storeAs('img/admins', $nombre, 'public');
+            $admin->foto = $nombre;
+        }
+        $admin->save();
         return redirect('/admins/listado');
-
-
     }
-
-    public function destroy($id)
-    {
-        $administrador = Administrador::find($id);
-    
-        $administrador->delete();
-        return redirect('/admins/listado')->with('mensaje', 'Administrador eliminado correctamente');
-    }
-
 
 
 }
