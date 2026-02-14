@@ -36,11 +36,15 @@ return [
     */
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users',
     ],
+    'admin' => [
+        'driver' => 'session',
+        'provider' => 'administradores', // Tu tabla
+    ],
+],
 
     /*
     |--------------------------------------------------------------------------
@@ -60,10 +64,11 @@ return [
     */
 
     'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\User::class,
-        ],
+    // ...
+    'administradores' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Administrador::class,
+    ],
 
         // 'users' => [
         //     'driver' => 'database',

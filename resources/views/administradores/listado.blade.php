@@ -33,24 +33,35 @@
 
                             <div class="flex items-center space-x-4 mt-4 border-t pt-4 dark:border-gray-700">
 
-                                <a href="/admins/{{ $admin->id }}/ver"
-                                    class="text-blue-600 dark:text-blue-500 hover:underline inline-flex items-center text-sm font-medium">
-                                    Ver Perfil
-                                </a>
+                                {{-- 2. Editar: Lo ve el SuperAdmin y el Admin --}}
+                                @if (Auth::guard('admin')->user()->esSuperAdmin() || Auth::guard('admin')->user()->esAdmin())
+                                    <a href="/admins/{{ $admin->id }}/editar"
+                                        class="text-blue-600 dark:text-blue-500 hover:underline inline-flex items-center text-sm font-medium">
+                                        Editar
+                                    </a>
+                                @endif
 
-                                <a href="/admins/{{ $admin->id }}/editar"
-                                    class="text-blue-600 dark:text-blue-500 hover:underline inline-flex items-center text-sm font-medium">
-                                    Editar
-                                </a>
+                                @if (Auth::guard('admin')->user()->esAdmin() && $admin->estado == 'activo')
+                                    <form action="/admins/{{ $admin->id }}/inactivar" method="POST">
+                                        @csrf
+                                        <button type="submit"
+                                            class="text-orange-600 dark:text-orange-500 hover:underline inline-flex items-center text-sm font-medium">
+                                            Inactivar
+                                        </button>
+                                    </form>
+                                @endif
 
-                                <form action="/admins/{{ $admin->id }}/eliminar" method="POST"
-                                    onsubmit="return confirm('¿Eliminar permanentemente a este administrador?')">
-                                    @csrf
-                                    <button type="submit"
-                                        class="text-red-600 dark:text-red-500 hover:underline inline-flex items-center text-sm font-medium">
-                                        Eliminar
-                                    </button>
-                                </form>
+                                @if (Auth::guard('admin')->user()->esSuperAdmin())
+                                    <form action="/admins/{{ $admin->id }}/eliminar" method="POST"
+                                        onsubmit="return confirm('¿Eliminar permanentemente a este administrador?')">
+                                        @csrf
+                                        <button type="submit"
+                                            class="text-red-600 dark:text-red-500 hover:underline inline-flex items-center text-sm font-medium">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                @endif
+
                             </div>
                         </div>
                     </div>

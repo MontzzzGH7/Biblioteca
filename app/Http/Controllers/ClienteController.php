@@ -28,17 +28,21 @@ class ClienteController extends Controller
         $cliente->contraseña = bcrypt($req->contraseña);
         $cliente->estado = $req->estado;
         $cliente->foto = 'cliente_default.jpg';
-        $cliente->save(); // Guardar para generar ID
+        $cliente->save(); 
 
         if($req->hasFile('foto')) {
             $foto = $req->file('foto');
             $nombre = 'clientes_' . $cliente->id . '.' . $foto->getClientOriginalExtension();
             $foto->storeAs('img/clientes', $nombre, 'public');
-            
             $cliente->foto = $nombre;
             $cliente->save();
         }
         return redirect('/clientes/listado');
+    }
+
+    public function show($id) {
+        $cliente = Cliente::find($id);
+        return view('clientes.formulario_showC', compact('cliente'));
     }
 
     public function edit($id) {
@@ -50,7 +54,9 @@ class ClienteController extends Controller
         $cliente = Cliente::find($id);
         $cliente->nombre = $req->nombre;
         $cliente->apellido_paterno = $req->apellido_paterno;
+        $cliente->apellido_materno = $req->apellido_materno; 
         $cliente->correo = $req->correo;
+        $cliente->telefono = $req->telefono; 
         $cliente->estado = $req->estado;
 
         if($req->hasFile('foto')) {
@@ -63,4 +69,32 @@ class ClienteController extends Controller
         return redirect('/clientes/listado');
     }
 
+    public function inactivar($id) {
+        $cliente = Cliente::find($id);
+        if($cliente) {
+            $cliente->estado = 0; 
+            $cliente->save();
+        }
+        return redirect('/clientes/listado');
+    }
+
+    public function activar($id) {
+        $cliente = Cliente::find($id);
+        if($cliente) {
+            $cliente->estado = 1; 
+            $cliente->save();
+        }
+        return redirect('/clientes/listado');
+    }
+
+    public function destroy($id) {
+        $cliente = Cliente::find($id);
+        if($cliente) {
+            if($cliente->foto && $cliente->foto !== 'cliente_default.jpg') {
+                Storage::disk('public')->delete('img/clientes/' . $cliente->foto);
+            }
+            $cliente->delete();
+        }
+        return redirect('/clientes/listado');
+    }
 }

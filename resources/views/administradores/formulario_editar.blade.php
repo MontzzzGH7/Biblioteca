@@ -44,8 +44,6 @@
                       <select id="rol" name="rol" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
                           <option value="SuperAdmin" {{ $administrador->rol == 'SuperAdmin' ? 'selected' : '' }}>SuperAdmin</option>
                           <option value="Admin" {{ $administrador->rol == 'Admin' ? 'selected' : '' }}>Admin</option>
-                          <option value="Editor" {{ $administrador->rol == 'Editor' ? 'selected' : '' }}>Editor</option>
-                          <option value="Moderador" {{ $administrador->rol == 'Moderador' ? 'selected' : '' }}>Moderador</option>
                       </select>
                   </div>
                   

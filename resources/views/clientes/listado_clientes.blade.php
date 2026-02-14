@@ -56,8 +56,6 @@
                                 <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                                     <th scope="row"
                                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-
-
                                         <div class="flex items-center">
                                             @if ($cliente->foto)
                                                 <img src="{{ asset('storage/img/clientes/' . $cliente->foto) }}"
@@ -75,44 +73,61 @@
                                                     {{ $cliente->apellido_materno }}</div>
                                             </div>
                                         </div>
-
-
                                     </th>
                                     <td class="px-4 py-3">{{ $cliente->usuario }}</td>
                                     <td class="px-4 py-3 italic">{{ $cliente->correo }}</td>
                                     <td class="px-4 py-3">{{ $cliente->telefono }}</td>
                                     <td class="px-4 py-3 text-center">
-                                        @if ($cliente->estado == 1 || $cliente->estado == 'activo')
-                                            <span
-                                                class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Activo</span>
+                                        @if ($cliente->estado == 1)
+                                            <span class="bg-green-100 text-green-800 ...">Activo</span>
                                         @else
-                                            <span
-                                                class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">Inactivo</span>
+                                            <span class="bg-red-100 text-red-800 ...">Inactivo</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 text-center">
                                         <div class="flex items-center justify-center space-x-2">
-                                            {{-- BOTÓN MOSTRAR (VER) --}}
+
                                             <a href="/clientes/{{ $cliente->id }}/ver"
                                                 class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700">
                                                 Ver
                                             </a>
 
-                                            {{-- BOTÓN EDITAR --}}
                                             <a href="/clientes/{{ $cliente->id }}/editar"
                                                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                                                 Editar
                                             </a>
 
-                                            {{-- BOTÓN BORRAR --}}
-                                            <form action="/clientes/{{ $cliente->id }}/eliminar" method="POST"
-                                                onsubmit="return confirm('¿Estás seguro de eliminar este cliente?')">
-                                                @csrf
-                                                <button type="submit"
-                                                    class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-red-500 dark:hover:bg-red-600 focus:outline-none dark:focus:ring-red-900">
-                                                    Eliminar
-                                                </button>
-                                            </form>
+                                            @if (Auth::guard('admin')->user()->esAdmin() || Auth::guard('admin')->user()->esSuperAdmin())
+                                                @if ($cliente->estado == 1 || $cliente->estado == 'activar')
+                                                    <form action="/clientes/{{ $cliente->id }}/inactivar" method="POST">
+                                                        @csrf
+                                                        <button type="submit"
+                                                            class="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:ring-orange-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:focus:ring-orange-900">
+                                                            Inactivar
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <form action="/clientes/{{ $cliente->id }}/activar" method="POST">
+                                                        @csrf
+                                                        <button type="submit"
+                                                            class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:focus:ring-green-900">
+                                                            Activar
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            @endif
+
+                                            @if (Auth::guard('admin')->user()->esSuperAdmin())
+                                                <form action="/clientes/{{ $cliente->id }}/eliminar" method="POST"
+                                                    onsubmit="return confirm('¿Estás seguro de eliminar este cliente definitivamente?')">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="text-white font-medium rounded-lg text-xs px-3 py-1.5 dark:bg-red-500 dark:hover:bg-red-600 focus:outline-none dark:focus:ring-red-900">
+                                                        Eliminar
+                                                    </button>
+                                                </form>
+                                            @endif
+
                                         </div>
                                     </td>
                                 </tr>

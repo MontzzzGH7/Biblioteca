@@ -12,4 +12,14 @@ class Producto extends Model
     protected $table = 'libros';
 
     public $timestamps = false;
+
+    // Agrega esto para que el controlador pueda guardar los datos
+    protected $fillable = [
+        'titulo', // Supongo que usas titulo por ser libros
+        'autor',
+        'precio',
+        'stock',
+        'estado', 
+        'foto'
+    ];
 }

@@ -2,14 +2,42 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Administrador extends Model
+class Administrador extends Authenticatable
 {
-    use HasFactory;
+    use Notifiable;
 
     protected $table = 'administradores';
 
-    public $timestamps = false;
+    public $timestamps = false; 
+
+    protected $fillable = [
+        'usuario', 
+        'contraseña', 
+        'nombre', 
+        'apellido_paterno', 
+        'apellido_materno', 
+        'estado', 
+        'correo', 
+        'rol', 
+        'foto'
+    ]; 
+
+
+    public function getAuthPassword()
+    {
+        return $this->contraseña;
+    }
+
+    public function esSuperAdmin()
+    {
+        return $this->rol === 'SuperAdmin';
+    }
+
+    public function esAdmin()
+    {
+        return $this->rol === 'Admin';
+    }
 }
