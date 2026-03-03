@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class StoreMultaRequest extends FormRequest
 {
    public function authorize(): bool {
-    return true; // ¡No olvides cambiar esto a true!
+    return true;
 }
 
 public function rules(): array {
